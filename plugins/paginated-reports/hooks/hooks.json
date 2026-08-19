@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/validate-rdl.sh\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/claude-hook-adapter.sh\" files rdl validate-rdl.sh",
             "timeout": 10,
             "if": "Edit(**/*.rdl)"
           }
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/validate-rdl.sh\"",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/claude-hook-adapter.sh\" files rdl validate-rdl.sh",
             "timeout": 10,
             "if": "Write(**/*.rdl)"
           }

@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
 # Mirror the te-cli skill from its upstream home (github.com/TabularEditor/CLI)
-# into this marketplace's tabular-editor plugin, and re-apply two local-only
-# augmentations that upstream does not carry.
+# into this marketplace's neutral skill tree (skills/tabular-editor/te-cli),
+# and re-apply two local-only augmentations that upstream does not carry.
 #
 # What it does, every run:
 #   1. Pull upstream SKILL.md + references/ (the skill is maintained upstream and
-#      vendored here; this stops the copy from drifting).
-#   2. Strip the upstream `version:` frontmatter (unsupported in this
-#      marketplace; plugins version via plugin.json lockstep instead).
-#   3. Keep the local references/pbir-cli-tandem.md (this repo maintains its own,
+#      vendored here; this stops the copy from drifting). The upstream SKILL.md
+#      splits on arrival: frontmatter name/description into skill.yaml, body
+#      into instructions.md. The upstream `version:` field is dropped
+#      (unsupported here; versions come from marketplace.yaml lockstep).
+#   2. Keep the local references/pbir-cli-tandem.md (this repo maintains its own,
 #      written against the pbir-cli plugin here; upstream's variant is ignored).
-#   4. (Re)write references/get-te-cli.md -- a local-only reference telling the
+#   3. (Re)write references/get-te-cli.md -- a local-only reference telling the
 #      agent how to download the `te` binary per platform and put it on PATH.
-#   5. Re-inject the local-only SKILL.md content: the get-te-cli pointer under
+#   4. Re-inject the local-only instruction content: the get-te-cli pointer under
 #      the title, its entry in the References list, the AI-metadata bullet in
 #      "Make bulk changes", and the "Bundled scripts" section. All survive every
 #      sync because they are re-applied here.
+#   5. Regenerate the Claude plugin output (adapters/claude/build.py) so
+#      plugins/ stays in step with the neutral source.
 #
 # Upstream CHANGELOG/LICENSE/README are distribution metadata and are not vendored.
 # Fail-open: no network / bad clone / missing upstream file leaves the current
@@ -30,7 +33,8 @@
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DEST="$REPO_ROOT/plugins/tabular-editor/skills/te-cli"
+DEST="$REPO_ROOT/skills/tabular-editor/te-cli"
+BODY="$DEST/instructions.md"
 UPSTREAM="https://github.com/TabularEditor/CLI.git"
 SUBDIR="skills/te-cli"
 GETREF="$DEST/references/get-te-cli.md"
@@ -99,16 +103,16 @@ GETREF_EOF
 
 inject_pointer() {
   # Idempotent: insert the pointer just after the first H1 if it is not already there.
-  grep -qF 'references/get-te-cli.md' "$DEST/SKILL.md" 2>/dev/null && return 0
+  grep -qF 'references/get-te-cli.md' "$BODY" 2>/dev/null && return 0
   local t; t="$(mktemp)" || return 0
   awk -v p="$POINTER" '
     { print }
     /^# / && !done { print ""; print p; done=1 }
-  ' "$DEST/SKILL.md" > "$t" && mv "$t" "$DEST/SKILL.md"
+  ' "$BODY" > "$t" && mv "$t" "$BODY"
 }
 
 inject_local_sections() {
-  local skill="$DEST/SKILL.md" t
+  local skill="$BODY" t
 
   # 1. AI-metadata bullet at the end of the "Make bulk changes" list, keyed off
   #    the macro-run bullet that closes it upstream.
@@ -176,11 +180,11 @@ EOF
 case "${1:-}" in
   --install-hook|install-hook) install_hook; exit 0 ;;
   --write-local) write_get_ref; inject_pointer; printf 'wrote local-only get-te-cli.md + SKILL pointer\n'; exit 0 ;;
-  -h|--help) sed -n '2,33p' "$0"; exit 0 ;;
+  -h|--help) sed -n '2,32p' "$0"; exit 0 ;;
 esac
 
 command -v git >/dev/null 2>&1 || { printf 'sync-te-cli: git not found; skipping\n' >&2; exit 0; }
-[ -f "$DEST/SKILL.md" ] || { printf 'sync-te-cli: %s missing; skipping\n' "$DEST/SKILL.md" >&2; exit 0; }
+[ -f "$BODY" ] || { printf 'sync-te-cli: %s missing; skipping\n' "$BODY" >&2; exit 0; }
 
 tmp="$(mktemp -d "${TMPDIR:-/tmp}/te-cli-sync.XXXXXX")" || exit 0
 trap 'rm -rf "$tmp"' EXIT
@@ -192,7 +196,41 @@ SRC="$tmp/$SUBDIR"
 { [ -f "$SRC/SKILL.md" ] && [ -d "$SRC/references" ] && ls "$SRC/references/"*.md >/dev/null 2>&1; } || {
   printf 'sync-te-cli: upstream %s incomplete; aborting\n' "$SUBDIR" >&2; exit 0; }
 
-cp "$SRC/SKILL.md" "$DEST/SKILL.md"
+# Split upstream SKILL.md: body -> instructions.md, frontmatter -> skill.yaml.
+# The awk strips CR (a Windows autocrlf clone materializes CRLF), consumes only
+# the first two --- lines as frontmatter delimiters (a --- rule in the body is
+# body), and drops leading blank lines (the builder re-adds exactly one).
+# Written to a temp file and moved only if non-empty, keeping the fail-open
+# promise: a malformed upstream file leaves the current skill untouched.
+BODY_TMP="$(mktemp)" || exit 0
+awk '
+  { sub(/\r$/, "") }
+  f < 2 { if ($0 == "---") f++; next }
+  !started && $0 == "" { next }
+  { started = 1; print }
+' "$SRC/SKILL.md" > "$BODY_TMP"
+if [ ! -s "$BODY_TMP" ]; then
+  printf 'sync-te-cli: upstream SKILL.md produced an empty body; keeping current skill\n' >&2
+  rm -f "$BODY_TMP"
+  exit 0
+fi
+mv "$BODY_TMP" "$BODY"
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import yaml' 2>/dev/null; then
+  python3 - "$SRC/SKILL.md" "$DEST/skill.yaml" <<'PY' || printf 'sync-te-cli: frontmatter parse failed; skill.yaml left untouched\n' >&2
+import sys, yaml
+text = open(sys.argv[1], encoding="utf-8").read().replace("\r\n", "\n")
+parts = text.split("---\n")
+if len(parts) < 2:
+    sys.exit(1)
+fields = yaml.safe_load(parts[1])
+out = {"name": fields["name"], "description": fields["description"], "instructions": "instructions.md"}
+header = "# Platform-neutral skill definition. Adapters translate this; see adapters/README.md.\n"
+open(sys.argv[2], "w", encoding="utf-8").write(
+    header + yaml.safe_dump(out, sort_keys=False, allow_unicode=True, width=100000))
+PY
+else
+  printf 'sync-te-cli: python3+pyyaml not found; skill.yaml left untouched\n' >&2
+fi
 mkdir -p "$DEST/references"
 # Drop upstream-managed references (keep the local-only ones), then copy upstream's.
 find "$DEST/references" -maxdepth 1 -name '*.md' ! -name 'get-te-cli.md' ! -name 'pbir-cli-tandem.md' -delete 2>/dev/null
@@ -201,18 +239,23 @@ for f in "$SRC/references/"*.md; do
   cp "$f" "$DEST/references/"
 done
 
-# Strip the upstream version frontmatter (unsupported here; plugin.json versions instead).
-perl -ni -e 'print unless !$d && /^version:/ && ($d=1)' "$DEST/SKILL.md"
-
 # Re-apply the local-only augmentations (upstream does not carry these).
 write_get_ref
 inject_pointer
 inject_local_sections
 
-if git -C "$REPO_ROOT" diff --quiet -- plugins/tabular-editor/skills/te-cli 2>/dev/null; then
+# Regenerate the Claude plugin output from the neutral source.
+if command -v python3 >/dev/null 2>&1 && python3 -c 'import yaml' 2>/dev/null; then
+  python3 "$REPO_ROOT/adapters/claude/build.py" >/dev/null || \
+    printf 'sync-te-cli: adapters/claude/build.py failed; run it manually\n' >&2
+else
+  printf 'sync-te-cli: python3+pyyaml not found; run adapters/claude/build.py to regenerate plugins/\n' >&2
+fi
+
+if git -C "$REPO_ROOT" diff --quiet -- skills/tabular-editor/te-cli plugins/tabular-editor/skills/te-cli 2>/dev/null; then
   printf 'sync-te-cli: up to date with upstream\n'
 else
   printf 'sync-te-cli: te-cli skill updated from upstream; review and commit:\n'
-  git -C "$REPO_ROOT" --no-pager diff --stat -- plugins/tabular-editor/skills/te-cli
+  git -C "$REPO_ROOT" --no-pager diff --stat -- skills/tabular-editor/te-cli plugins/tabular-editor/skills/te-cli
 fi
 exit 0

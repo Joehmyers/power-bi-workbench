@@ -157,6 +157,27 @@ Hook checks can be individually toggled via config files. Set any check to `fals
 - `plugins/pbip/hooks/config.yaml` -- PBIR, TMDL, and report binding validation
 - `plugins/pbi-desktop/hooks/config.yaml` -- DAX references, measure metadata, referential integrity, metadata cache
 
+### Repository layout: neutral sources and adapters
+
+The marketplace content is agent-agnostic. The source of truth is
+platform-neutral, and adapters translate it into each platform's native
+format:
+
+- `marketplace.yaml` -- name, version, shared metadata, and the group list
+- `skills/<group>/<skill>/` -- each skill as `skill.yaml` (name, description) plus `instructions.md` (plain Markdown body) and its resources
+- `tools/` -- tool definitions in YAML (today: MCP servers)
+- `hooks/` -- validation hooks: a `hook.yaml` event map plus plain executable shell scripts that take file paths or command text as arguments (`bash hooks/pbip/validate-tmdl.sh <file>` works standalone or in CI)
+- `adapters/` -- one directory per target platform: [Claude Code](adapters/claude/README.md), [Databricks Genie](adapters/genie/README.md), and [OpenAI assistants](adapters/openai/README.md), each with a README and example config
+
+`plugins/` and `.claude-plugin/` are the Claude adapter's generated output,
+committed so installation keeps working straight from this repository. Edit
+the neutral sources, run `python3 adapters/claude/build.py`, and commit both;
+CI fails if they drift. See [`adapters/README.md`](adapters/README.md) for
+the full contract. The spec and the decision record behind this layout live
+in the maintainer's template-repo docs, at
+`docs/specs/agent-agnostic-marketplace/spec.md` and
+`docs/decisions/D-0002-platform-neutral-skill-format-for-agent-marketplaces.md`.
+
 ### Power BI and Fabric skills, agents, and hooks: available plugins
 
 > [!WARNING]

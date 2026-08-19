@@ -1,0 +1,17 @@
+# Skill group definition (one group = one installable plugin/space/assistant
+# bundle on the target platform). See adapters/README.md.
+name: goblin-mode
+description: Set up, audit, and improve your agentic Power BI development workspace.
+keywords:
+- agentic
+- getting-started
+- onboarding
+- setup
+- install
+- audit
+- skills
+- memory
+- context-engineering
+- secrets
+- claude-code
+- workflow

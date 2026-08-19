@@ -1,5 +1,18 @@
 # Contributing
 
+## Where to edit
+
+The platform-neutral sources under `marketplace.yaml`, `skills/`, `tools/`,
+and `hooks/` are the source of truth. `plugins/` and `.claude-plugin/` are
+generated from them by `python3 adapters/claude/build.py`; do not edit them
+by hand. After changing a neutral source, run the build and commit the
+regenerated output with your change (CI rejects drift). See
+[`adapters/README.md`](adapters/README.md).
+
+A skill lives at `skills/<group>/<skill-name>/` as `skill.yaml` (name and
+description) plus `instructions.md` (the body) and any `references/`,
+`examples/`, or `scripts/` directories.
+
 ## New skills
 
 - Justify why the skill should exist and how it is not covered by existing skills, or included in existing skills

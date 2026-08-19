@@ -1,0 +1,46 @@
+# Platform-neutral hook definition. Events describe when to run each script;
+# adapters translate them into platform wiring (see adapters/README.md).
+#
+# These hooks guard live Power BI Desktop sessions driven over TOM/ADOMD.NET,
+# so they key on the shell commands the agent runs, not on file writes.
+# `command_matches` is a glob tested against the full command text. The script
+# receives the subcommand and the command text as arguments and applies its own
+# finer-grained gating, so a broad glob here is safe.
+name: pbi-desktop
+description: Validates DAX references, measure metadata, referential integrity, compatibility level, and model metadata cache for Power BI Desktop connections via TOM/ADOMD.NET. Toggle checks in config.yaml next to this file.
+events:
+  - event: command-pre
+    command_matches: "*tom_nuget*"
+    run: pbi-hooks.sh
+    args: [validate-dax]
+    timeout: 10
+  - event: command-pre
+    command_matches: "* -File *.ps1*"
+    run: pbi-hooks.sh
+    args: [validate-dax]
+    timeout: 10
+  - event: command-pre
+    command_matches: "*Measures.Add*"
+    run: pbi-hooks.sh
+    args: [validate-measure]
+    timeout: 10
+  - event: command-pre
+    command_matches: "* -File *.ps1*"
+    run: pbi-hooks.sh
+    args: [validate-measure]
+    timeout: 10
+  - event: command-post
+    command_matches: "* -File *.ps1*"
+    run: pbi-hooks.sh
+    args: [refresh-cache]
+    timeout: 30
+  - event: command-post
+    command_matches: "* -File *.ps1*"
+    run: pbi-hooks.sh
+    args: [check-compat]
+    timeout: 10
+  - event: command-post
+    command_matches: "*SaveChanges*"
+    run: pbi-hooks.sh
+    args: [check-ri]
+    timeout: 60

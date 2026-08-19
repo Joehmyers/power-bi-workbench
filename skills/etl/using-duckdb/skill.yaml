@@ -1,0 +1,4 @@
+# Platform-neutral skill definition. Adapters translate this; see adapters/README.md.
+name: using-duckdb
+description: Query Fabric lakehouse and warehouse data using DuckDB, either locally or inside a Fabric notebook. Automatically invoke when the user mentions "DuckDB", "query Delta tables locally", or asks to "attach DuckDB to a lakehouse", "query OneLake data", "explore lakehouse data", "data freshness check", "validate data quality", "use DuckDB in Fabric".
+instructions: instructions.md

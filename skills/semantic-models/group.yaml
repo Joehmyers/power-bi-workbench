@@ -1,0 +1,10 @@
+# Skill group definition (one group = one installable plugin/space/assistant
+# bundle on the target platform). See adapters/README.md.
+name: semantic-models
+description: Design, build, optimize, and review Power BI semantic models.
+keywords:
+- power-bi
+- semantic-model
+- naming-conventions
+- tmdl
+- power-query

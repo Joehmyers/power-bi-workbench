@@ -1,0 +1,29 @@
+# Example Genie space config for the Genie adapter.
+#
+# Build with:
+#   python3 adapters/genie/build.py adapters/genie/examples/space-config.yaml
+#
+# Output lands in dist/genie/space-config/.
+#
+# Genie has no file store, so only each skill's description and
+# instructions.md travel; references/ and examples/ stay behind. Keep the
+# skill list short: Genie budgets tokens per space.
+title: Power BI Power Query Helper
+description: Guidance for authoring and validating Power Query (M) expressions in semantic models.
+
+# Skills to include, as <group>/<skill> paths under skills/.
+# Prefer skills whose instructions.md is self-contained guidance. Skills that
+# mostly route to references/ or to local CLI tools lose their value here,
+# because Genie cannot read files or run tools.
+skills:
+  - semantic-models/power-query
+
+# Databricks SQL warehouse to attach the space to. Find yours with:
+#   databricks warehouses list
+warehouse_id: <your-warehouse-id>
+
+# Optional: opening text placed above the skill sections.
+# preamble: You are a Power BI development assistant.
+
+# Optional: warn when the assembled instructions exceed this many characters.
+# max_chars: 20000

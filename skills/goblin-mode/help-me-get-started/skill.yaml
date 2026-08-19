@@ -1,0 +1,4 @@
+# Platform-neutral skill definition. Adapters translate this; see adapters/README.md.
+name: help-me-get-started
+description: Friendly, jargon-free onboarding for people new to coding agents and Power BI agentic development. Invoke for setup, prerequisites, tool installation, terminal guidance, safety questions, or explanations of models, context, prompts, tools, and environments. Use setup mode for concise installation help, explain mode for guided learning, and improve-my-agent-setup for an existing setup audit.
+instructions: instructions.md
