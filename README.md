@@ -168,6 +168,7 @@ format:
 - `tools/` -- tool definitions in YAML (today: MCP servers)
 - `hooks/` -- validation hooks: a `hook.yaml` event map plus plain executable shell scripts that take file paths or command text as arguments (`bash hooks/pbip/validate-tmdl.sh <file>` works standalone or in CI)
 - `adapters/` -- one directory per target platform: [Claude Code](adapters/claude/README.md), [Databricks Genie](adapters/genie/README.md), and [OpenAI assistants](adapters/openai/README.md), each with a README and example config
+- `projects/` -- working folder for the PBIP projects being developed in this repository; the skills and hooks operate on the files here (see [`projects/README.md`](projects/README.md))
 
 `plugins/` and `.claude-plugin/` are the Claude adapter's generated output,
 committed so installation keeps working straight from this repository. Edit

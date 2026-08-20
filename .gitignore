@@ -27,3 +27,8 @@ hooks/pbi-desktop/bin/
 skills/pbi-desktop/connect-pbid/bin/
 plugins/pbi-desktop/hooks/bin/
 plugins/pbi-desktop/skills/connect-pbid/bin/
+
+# Per-machine Power BI Desktop state inside PBIP projects (projects/).
+# The rest of a PBIP project is text source and belongs in git.
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
