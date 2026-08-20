@@ -29,6 +29,7 @@ sources.
 | `tools/<name>.yaml` (via the group's `tools` list) | `plugins/<group>/.mcp.json` |
 | `hooks/<name>/hook.yaml` | `plugins/<group>/hooks/hooks.json` |
 | `hooks/<name>/` scripts and assets | copied verbatim into `plugins/<group>/hooks/` |
+| `AGENTS.md` | `CLAUDE.md` (an import shim, since Claude Code does not read AGENTS.md natively) |
 
 Hook events map to Claude Code's hook model: `file-change` becomes
 PostToolUse `Edit` and `Write` matchers, `command-pre` becomes a PreToolUse
