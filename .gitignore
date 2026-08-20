@@ -4,9 +4,9 @@ __pycache__/
 .env
 .venv/
 *.log
+# Agent instructions are committed (AGENTS.md, imported by CLAUDE.md);
+# per-user Claude state stays local.
 .claude/
-CLAUDE.md
-AGENTS.md
 *.tmuo
 # Local dev builds live under tools/ subdirectories; the tracked tool
 # definitions are the top-level YAML files and README.
