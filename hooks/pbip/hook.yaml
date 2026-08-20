@@ -1,0 +1,29 @@
+# Platform-neutral hook definition. Events describe when to run each script;
+# adapters translate them into platform wiring (see adapters/README.md).
+#
+# Event kinds:
+#   file-change   after the agent writes or edits a file matching `paths`
+#   command-pre   before the agent runs a shell command matching `command_matches`
+#   command-post  after the agent runs a shell command matching `command_matches`
+#
+# `extensions` lists the file extensions a file-change script cares about, so
+# adapters that only see a raw shell command can extract candidate paths.
+# Every script is a plain executable: `bash <script> FILE...` works standalone.
+name: pbip
+description: Validates PBIP project files (PBIR structure, TMDL syntax, report binding) after Write/Edit and Bash modifications
+events:
+  - event: file-change
+    paths: "**/*.Report/**"
+    extensions: [json, pbir]
+    run: validate-pbir.sh
+    timeout: 10
+  - event: file-change
+    paths: "**/*.tmdl"
+    extensions: [tmdl]
+    run: validate-tmdl.sh
+    timeout: 10
+  - event: file-change
+    paths: "**/definition.pbir"
+    extensions: [pbir]
+    run: validate-report-binding.sh
+    timeout: 10

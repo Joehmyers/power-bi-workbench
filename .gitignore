@@ -8,12 +8,22 @@ __pycache__/
 CLAUDE.md
 AGENTS.md
 *.tmuo
+# Local dev builds live under tools/ subdirectories; the tracked tool
+# definitions are the top-level YAML files and README.
 /tools/*
+!/tools/*.yaml
+!/tools/README.md
+# Adapter build output (Genie, OpenAI); the Claude adapter's output in
+# plugins/ and .claude-plugin/ is committed instead.
+dist/
 tmp/
 tests/
 .worktrees/
 node_modules/
 package-lock.json
 package.json
+# Runtime-downloaded binaries, in both the neutral tree and generated output
+hooks/pbi-desktop/bin/
+skills/pbi-desktop/connect-pbid/bin/
 plugins/pbi-desktop/hooks/bin/
 plugins/pbi-desktop/skills/connect-pbid/bin/

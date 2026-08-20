@@ -1,0 +1,4 @@
+# Platform-neutral skill definition. Adapters translate this; see adapters/README.md.
+name: improve-my-agent-setup
+description: Audit and improve an entire agentic-development setup, including skills, context, memory, tools, models, permissions, hooks, workflow habits, and secrets hygiene. Invoke for setup reviews, workflow grading, Goblin Mode, or questions about what to improve. Supports shallow, deep, ultra, and yolo modes. Use domain-specific skills for a single model, report, or tenant.
+instructions: instructions.md

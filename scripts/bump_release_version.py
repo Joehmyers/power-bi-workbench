@@ -1,5 +1,9 @@
 """Bump the lockstep release version across marketplace, plugins, and skills.
 
+Bumps the neutral source of truth (marketplace.yaml) and the generated Claude
+output together, so the tree stays consistent whether or not the adapter is
+rerun afterwards.
+
 Usage: python scripts/bump_release_version.py <old> <new>
 """
 
@@ -11,6 +15,13 @@ import sys
 OLD, NEW = sys.argv[1], sys.argv[2]
 root = pathlib.Path(__file__).resolve().parent.parent
 changed = []
+
+my = root / "marketplace.yaml"
+text = my.read_text(encoding="utf-8")
+new_text = re.sub(rf"^version: {re.escape(OLD)}$", f"version: {NEW}", text, count=1, flags=re.MULTILINE)
+if new_text != text:
+    my.write_text(new_text, encoding="utf-8")
+    changed.append(my)
 
 mp = root / ".claude-plugin" / "marketplace.json"
 data = json.loads(mp.read_text(encoding="utf-8"))

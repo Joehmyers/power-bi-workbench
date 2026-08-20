@@ -1,0 +1,22 @@
+# Example assistant config for the OpenAI adapter.
+#
+# Build with:
+#   python3 adapters/openai/build.py adapters/openai/examples/assistant-config.yaml
+#
+# Output lands in dist/openai/assistant-config/.
+name: Power BI TMDL Assistant
+description: Answers TMDL and PBIP structure questions with skill guidance and searchable references.
+model: gpt-4.1
+
+# Skills to include, as <group>/<skill> paths under skills/.
+skills:
+  - pbip/tmdl
+  - pbip/pbip
+
+# Upload each skill's references/ and examples/ to a vector store for
+# file_search (see the README for the upload flow). Set false to ship
+# instructions only.
+include_resources: true
+
+# Optional: opening text placed above the skill sections.
+# preamble: You are a Power BI development assistant.

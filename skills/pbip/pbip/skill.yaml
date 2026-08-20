@@ -1,0 +1,4 @@
+# Platform-neutral skill definition. Adapters translate this; see adapters/README.md.
+name: pbip
+description: Guidance for Power BI Project (PBIP) structure, thick and thin reports, project renames, forks, and validation. Use for .pbip, .pbism, .platform, definition.pbir, PBIP vs PBIX, or cross-cutting project operations.
+instructions: instructions.md

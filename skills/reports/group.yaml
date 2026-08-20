@@ -1,0 +1,11 @@
+# Skill group definition (one group = one installable plugin/space/assistant
+# bundle on the target platform). See adapters/README.md.
+name: reports
+description: Build, format, optimize, and review interactive Power BI reports.
+keywords:
+- power-bi
+- reports
+- deneb
+- vega
+- custom-visuals
+- pbir

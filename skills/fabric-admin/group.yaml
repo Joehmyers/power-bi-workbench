@@ -1,0 +1,12 @@
+# Skill group definition (one group = one installable plugin/space/assistant
+# bundle on the target platform). See adapters/README.md.
+name: fabric-admin
+description: Audit tenant settings, governance, security groups, and Fabric admin state.
+keywords:
+- power-bi
+- fabric
+- administration
+- tenant-settings
+- governance
+- security-groups
+- delegated-overrides
