@@ -59,4 +59,3 @@ The script only discovers Power BI reports. For full dependency mapping includin
 
 - **`semantic-model`** -- Design, build, refresh, and review models (quality, memory, DAX, design)
 - **`refreshing-semantic-model`** -- Trigger and monitor model refreshes
-- **`fabric-cli`** (fabric-cli plugin) -- Workspace and item management via `fab` CLI

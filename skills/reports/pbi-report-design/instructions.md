@@ -176,7 +176,7 @@ A bare number lacks meaning. Every KPI must answer "Is this good or bad?" (targe
 
 - Position at top or left of page, maximum 5 per page
 - **Prefer `kpi` visual type over `card`** when a target exists -- it has built-in indicator, goal, and trend line data roles
-- Always include a **target** and **gap** (absolute + percentage). If no target measure exists, discuss with the user: propose adding a prior-year measure to the semantic model (use Tabular Editor CLI or the `tmdl` skill), or creating an extension measure as a fallback. Common targets: prior year (`CALCULATE([Measure], DATEADD('Date'[Date], -1, YEAR))`), budget, or rolling average
+- Always include a **target** and **gap** (absolute + percentage). If no target measure exists, discuss with the user: propose adding a prior-year measure to the semantic model (use the `tmdl` skill), or creating an extension measure as a fallback. Common targets: prior year (`CALCULATE([Measure], DATEADD('Date'[Date], -1, YEAR))`), budget, or rolling average
 - **If no clear target exists, ask the user** -- do not leave KPIs bare. Discuss whether prior period, budget, or a custom threshold makes sense
 - Apply conditional formatting to the **gap**, not the primary value
 - Pair color with a secondary cue (arrow/icon) for accessibility
@@ -339,7 +339,3 @@ Skill routing for in-repo code visuals (all in the **custom-visuals** plugin; ad
 Reports are highly dependent on the underlying semantic model for their functionality. Most report capabilities -- measures, calculated columns, relationships, hierarchies, row-level security -- are defined in the semantic model, not the report. When designing or modifying reports, you will frequently need to understand or modify the model. Key skills:
 
 - **`tmdl`** (pbip plugin) -- Direct TMDL file editing for measures, columns, relationships
-- **`te-docs`** (tabular-editor plugin) -- Tabular Editor CLI for model operations
-- **`c-sharp-scripting`** (tabular-editor plugin) -- C# scripts for bulk model changes
-- **`bpa-rules`** (tabular-editor plugin) -- Best Practice Analyzer rules for model quality
-- **`connect-pbid`** (pbi-desktop plugin) -- Connect to Power BI Desktop's local Analysis Services instance for live model queries and modifications

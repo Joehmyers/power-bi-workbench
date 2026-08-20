@@ -2,7 +2,7 @@
 # shared metadata. `groups` lists skill groups (skills/<group>/) in the order
 # they appear in generated marketplaces. Adapters read this file; see adapters/README.md.
 name: power-bi-agentic-development
-description: A marketplace for skills and tools for agentic Power BI development.
+description: Skills and hooks for agent-driven Power BI Project (PBIP) development.
 version: 26.31.0
 owner:
   name: Kurt Buhler
@@ -13,14 +13,6 @@ homepage: https://data-goblins.com
 repository: https://github.com/data-goblin/power-bi-agentic-development
 license: GPL-3.0
 groups:
-- goblin-mode
-- tabular-editor
-- pbi-desktop
 - pbip
 - semantic-models
 - reports
-- paginated-reports
-- fabric-cli
-- fabric-admin
-- custom-visuals
-- etl

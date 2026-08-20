@@ -295,4 +295,3 @@ Pro capacity supports only full-model standard refreshes. Enhanced refresh featu
 - **`semantic-model`** -- Model design, build, and quality/performance review
 - **`lineage-analysis`** -- Downstream report discovery and impact analysis
 - **`standardize-naming-conventions`** -- Naming audit and remediation
-- **`fabric-cli`** (fabric-cli plugin) -- Workspace and item management via `fab` CLI

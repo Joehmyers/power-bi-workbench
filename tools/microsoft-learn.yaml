@@ -1,5 +1,0 @@
-# Platform-neutral tool definition. See tools/README.md.
-name: microsoft-learn
-type: mcp
-transport: http
-url: https://learn.microsoft.com/api/mcp

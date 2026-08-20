@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "pbiviz": {
-      "command": "npx",
-      "args": ["-y", "powerbi-visuals-tools", "mcp"]
-    }
-  }
-}

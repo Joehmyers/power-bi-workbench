@@ -190,8 +190,6 @@ Common missed locations:
 
 **Other plugins:**
 - **`semantic-models`** plugin -- tooling and workflows for semantic model development (naming conventions, model quality). Use for working with the actual model content, not just its file format.
-- **`pbi-desktop`** plugin -- connecting to Power BI Desktop's local Analysis Services instance via TOM/ADOMD.NET
-- **`tabular-editor`** plugin -- Tabular Editor CLI, C# scripting, BPA rules, documentation search
 
 ## References
 
