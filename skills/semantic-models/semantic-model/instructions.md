@@ -13,18 +13,28 @@ Guidance for designing, building, refreshing, and reviewing Power BI / Analysis 
 
 - Editing report visuals, pages, or formatting: use the `pbir-cli` skill (reports plugin)
 - Isolated DAX query performance tuning: use the `dax` skill
-- TMDL file syntax mechanics: use the `tmdl` skill (this skill routes to it for the file-edit fallback)
-- The `te` command surface itself: the `te-cli` skill (tabular-editor plugin) is the command reference; this skill is the modeling judgment layered on top
+- TMDL file syntax mechanics: use the `tmdl` skill (this skill is the modeling judgment layered on top of it)
 
 ## Tool cascade (the core operating rule)
 
-Reach for the narrowest capable tool, in order. Most edits never leave step 1.
+Direct TMDL editing is the default path in this repository. Most edits never
+leave step 1.
 
-1. **`te` CLI first.** One verb per operation, staged in memory until `--save`, with a save-time DAX + referential-integrity gate. Covers add/set/rm/mv for measures, columns, relationships (`Sales[K]->Dim[K]` shorthand on `te add`), roles + RLS filters, calculation groups / items, incremental-refresh policy, `te format`, `te bpa`, `te vertipaq`, `te query`. Each Bash call is a fresh shell, so pass `-m <model>` (and `-s`/`-d` for remote) on every command, or set `TE_SESSION`. Read the real object's settable surface first with `te get <obj>` and `te set <obj> -q <prop>` (no value). The `te-cli` skill is the full command reference.
-2. **TOM, or a model MCP, when `te` cannot reach a property.** Some properties are absent from `te set -q` (for example `alternateOf`, `securityFilteringBehavior`, `crossFilteringBehavior`, KPI sub-objects, linguistic-schema content, calendar objects). Drive these through a `te script` C# pass (in-process TOM), or the `connect-pbid` skill (PowerShell + TOM/ADOMD against a live local Desktop instance, and the only route to traces: `EVALUATEANDLOG`, aggregation-hit events, storage DMVs). The Power BI Modeling MCP server is also available if you prefer an MCP. The local Desktop proxy cannot reach Direct Lake; use a remote XMLA endpoint there.
-3. **`fab` + direct TMDL last, with the `tmdl` skill.** Service- and file-shape operations with no model-edit verb: assigning Entra principals to roles (workspace-side, not in `.tmdl`), report-to-model binding, Copilot-folder features (AI instructions, AI data schema, verified answers), Lakehouse / Delta reshaping behind Direct Lake, and bulk structural surgery that is cleaner as one TMDL diff than N `te` calls. For read-only Fabric retrieval of AI instructions / schema, use `scripts/get_semantic_model_ai_metadata.py`. Author the TMDL with the `tmdl` skill, then run `te validate`.
+1. **Direct TMDL with the `tmdl` skill.** Edit the model as files in the
+   project's `.SemanticModel/definition/`: measures, columns, tables,
+   relationships, roles and RLS filters, calculation groups, incremental
+   refresh policy, descriptions, format strings. The `pbip` hooks validate
+   TMDL structure on every write, and the `pbip-validator` agent checks
+   syntax, indentation, and referential integrity before the model is opened
+   or deployed. Bulk structural surgery is cleaner as one TMDL diff.
+2. **External toolchains when installed, never assumed.** The Tabular Editor
+   CLI (`te`) adds staged edits with a save-time DAX + referential-integrity
+   gate plus `te format`, `te bpa`, `te vertipaq`, and `te query`; TOM or a
+   model MCP server reaches properties and live traces files cannot (for
+   example `EVALUATEANDLOG`, storage DMVs). Use them when they are present
+   on the machine; fall back to step 1 when they are not.
 
-Ordering gate: add relationships before any measure that uses `RELATED()` or a cross-table `CALCULATE()`, or the save gate fails with `DAX0002` (no relationship in context).
+Ordering gate: add relationships before any measure that uses `RELATED()` or a cross-table `CALCULATE()`; without the relationship the measure fails when the model next loads (DAX0002, no relationship in context).
 
 ## Lifecycle
 
@@ -53,15 +63,11 @@ Audit against the categories below and produce prioritized findings with file lo
 
 ## Related skills
 
-- `tmdl`: TMDL file authoring (the cascade's step-3 fallback)
+- `tmdl`: TMDL file authoring (the cascade's primary path)
 - `dax`: DAX query performance optimization
-- `connect-pbid`: TOM / ADOMD via PowerShell against a live Desktop instance; traces; the TOM / MCP tier
-- `te-cli`: the `te` command reference
-- `c-sharp-scripting`: TOM C# scripts and macros (`te script`) for properties `te` cannot reach
 - `standardize-naming-conventions`: naming audit and remediation
 - `refresh-semantic-model`: refresh monitoring and troubleshooting
 - `lineage-analysis`: artifact lineage (downstream reports and models that consume this model, across workspaces); distinct from intra-model object dependencies
-- `bpa-rules` (tabular-editor): authoring BPA rules; `fabric-cli`: service / workspace operations
 
 ## Reference map
 

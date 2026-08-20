@@ -2,17 +2,22 @@
 
 Expert guidance for authoring and editing TMDL (Tabular Model Definition Language) files directly in PBIP projects.
 
-> **This skill is a last resort.** Direct TMDL file editing lacks the validation, atomicity, and DAX query capabilities of the Tabular Editor CLI, Power BI MCP server, or the `connect-pbid` skill (TOM via PowerShell). Use those tools when available. TMDL editing is appropriate when:
+> **This skill is the primary path for model edits in this repository.** PBIP
+> projects here are edited as files, and TMDL is the model's file format.
 >
-> - Working with PBIP files in a Git repo without Power BI Desktop open
-> - No Tabular Editor CLI or MCP server is installed
-> - Making quick text-level fixes (descriptions, format strings, display folders) where a full tool chain is overkill
->
-> Direct TMDL editing does not validate DAX syntax, check referential integrity, or verify that property values are valid. Errors will only surface when the model is next loaded in Power BI Desktop or deployed via XMLA. Use the **`pbip-validator`** agent to check TMDL files for syntax issues, indentation errors, and referential integrity before opening in PBI Desktop.
+> Direct TMDL editing does not itself validate DAX syntax, check referential
+> integrity, or verify that property values are valid, so lean on the
+> guardrails that ship with this repository: the `pbip` hooks validate TMDL
+> structure on every write, and the **`pbip-validator`** agent checks syntax,
+> indentation, and referential integrity before the model is next opened in
+> Power BI Desktop or deployed via XMLA. External toolchains (the Tabular
+> Editor CLI, a model MCP server) add save-time validation and live DAX
+> queries; use them when they happen to be installed, but do not depend on
+> them.
 
 ## When to Use This Skill
 
-Activate only when the Tabular Editor CLI, Power BI MCP server, or `connect-pbid` skill are not available, and tasks involve:
+Activate for any task that involves:
 
 - Editing `.tmdl` files directly (measures, columns, tables, relationships)
 - Adding or modifying measure definitions in TMDL

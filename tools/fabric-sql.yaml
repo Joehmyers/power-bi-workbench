@@ -1,7 +1,0 @@
-# Platform-neutral tool definition. See tools/README.md.
-name: fabric-sql
-type: mcp
-transport: http
-url: https://api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint
-headers:
-  Authorization: Bearer ${FABRIC_PBI_TOKEN}

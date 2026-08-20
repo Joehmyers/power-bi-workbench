@@ -16,12 +16,14 @@ Detailed reference files (progressive disclosure — consult as directed by the 
 
 Trace capture and performance profiling:
 
-- **Local models (Power BI Desktop):** Use the Tabular Editor CLI `te query` (see the [`te-cli` skill](../../../tabular-editor/skills/te-cli/)) first; as an alternative, the [`connect-pbid` skill](../../../pbi-desktop/skills/connect-pbid/) covers FE/SE timing (`performance-profiling.md`) and intermediate result inspection (`evaluateandlog-debugging.md`).
-- **Remote models (Fabric Service / XMLA):** Run DAX with the Tabular Editor CLI `te query` (`-s <workspace> -d <model>`) against the workspace XMLA endpoint; see the [`te-cli` skill](../../../tabular-editor/skills/te-cli/) (tabular-editor plugin).
-- **Power BI Modeling MCP:** also available for trace and query if you prefer an MCP tool; reach for it after the options above.
+Trace capture needs an external tool; none is bundled with this repository.
+When one is installed, use it: the Tabular Editor CLI (`te query`, locally or
+with `-s <workspace> -d <model>` against a workspace XMLA endpoint), DAX
+Studio, or a model MCP server. Without one, work from the pattern references
+above: they identify the anti-patterns from the DAX text alone, and Power BI
+Desktop's Performance Analyzer gives coarse timings for verification.
 
 ## Related Skills
 
 - [`semantic-model`](../semantic-model/) — Model design, build, and auditing including DAX anti-patterns and best practices
-- [`connect-pbid` (pbi-desktop plugin)](../../../pbi-desktop/skills/connect-pbid/) — Trace capture, performance profiling, EVALUATEANDLOG debugging
 - [`lineage-analysis`](../lineage-analysis/) — Impact analysis before model changes

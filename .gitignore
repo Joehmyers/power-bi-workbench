@@ -4,9 +4,9 @@ __pycache__/
 .env
 .venv/
 *.log
+# Agent instructions are committed (AGENTS.md, imported by CLAUDE.md);
+# per-user Claude state stays local.
 .claude/
-CLAUDE.md
-AGENTS.md
 *.tmuo
 # Local dev builds live under tools/ subdirectories; the tracked tool
 # definitions are the top-level YAML files and README.
@@ -27,3 +27,8 @@ hooks/pbi-desktop/bin/
 skills/pbi-desktop/connect-pbid/bin/
 plugins/pbi-desktop/hooks/bin/
 plugins/pbi-desktop/skills/connect-pbid/bin/
+
+# Per-machine Power BI Desktop state inside PBIP projects (projects/).
+# The rest of a PBIP project is text source and belongs in git.
+**/.pbi/localSettings.json
+**/.pbi/cache.abf

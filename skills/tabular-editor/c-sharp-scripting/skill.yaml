@@ -1,4 +1,0 @@
-# Platform-neutral skill definition. Adapters translate this; see adapters/README.md.
-name: c-sharp-scripting
-description: Writing and executing C# scripts and macros against Power BI semantic models using Tabular Editor 2/3. Automatically invoke when the user mentions "C# script", "Tabular Editor script", "TOM scripting", "MacroActions.json", "XMLA", or asks to "automate model changes", "bulk update measures", "create calculation groups", "write a macro", "format DAX expressions", "manage model metadata".
-instructions: instructions.md

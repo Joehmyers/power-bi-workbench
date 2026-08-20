@@ -13,6 +13,8 @@ on:
       - 'hooks/**'
       - 'adapters/**'
       - 'marketplace.yaml'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
       - 'scripts/**'
       - '.github/workflows/validate-plugins.yml'
   pull_request:
@@ -27,6 +29,8 @@ on:
       - 'hooks/**'
       - 'adapters/**'
       - 'marketplace.yaml'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
       - 'scripts/**'
       - '.github/workflows/validate-plugins.yml'
 
@@ -51,10 +55,10 @@ jobs:
 
       - name: Fail on drift
         run: |
-          if [ -n "$(git status --porcelain -- plugins .claude-plugin)" ]; then
+          if [ -n "$(git status --porcelain -- plugins .claude-plugin CLAUDE.md)" ]; then
             echo "Generated output is out of date. Run: python3 adapters/claude/build.py"
-            git status --porcelain -- plugins .claude-plugin
-            git --no-pager diff -- plugins .claude-plugin | head -200
+            git status --porcelain -- plugins .claude-plugin CLAUDE.md
+            git --no-pager diff -- plugins .claude-plugin CLAUDE.md | head -200
             exit 1
           fi
 
