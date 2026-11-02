@@ -53,7 +53,8 @@ select **Refresh** in Desktop to load them.
 
 ## Demo briefs
 
-Briefs that exercise the workbench on this project:
+[`DEMO.md`](DEMO.md) is the step-by-step runbook for the live demo. More
+briefs that exercise the workbench on this project:
 
 - Add a `Revenue MTD` measure and a "Margin by month" line chart to Overview.
 - Add a Channels page: orders by channel by month, and mobile share by store.
