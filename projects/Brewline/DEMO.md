@@ -56,9 +56,11 @@ Arrange VS Code and Desktop side by side. Save in Desktop before each ask.
 1. **Context.** "What does the Brewline model contain, and where should a new
    measure go?" The agent reads `AGENTS.md`, the project README and the TMDL,
    and explains the model.
-2. **Report change.** "Add a Channels page: orders by channel by month, and
-   mobile order share by shop." In Desktop, select **Apply external changes**
-   in the banner. The new page appears.
+2. **Report change** (the prompt on the "Writing the prompt" slide). "In
+   projects/Brewline, add a Channels page showing orders by channel by month
+   and mobile order share by shop. Use the existing measures and follow
+   AGENTS.md. Tell me what to check in Power BI Desktop." In Desktop, select
+   **Apply external changes** in the banner. The new page appears.
 3. **Model and report change.** "Add a Like-for-like Revenue YoY % measure
    that only counts shops open for all of both periods, and add it to the
    Shops table." Apply again. If the new column shows blanks, select Refresh.
