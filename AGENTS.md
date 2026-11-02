@@ -1,61 +1,88 @@
 # AGENTS.md
 
-Agent context for this repository, auto-loaded at the start of every agent
-session. This file is the platform-neutral source; `CLAUDE.md` is a generated
-import shim (emitted by `adapters/claude/build.py`, since Claude Code does not
-read `AGENTS.md` natively) and must not be edited by hand.
+Agent context for this repository, read at the start of a session. GitHub
+Copilot in VS Code attaches it to every chat when the repo root is the
+workspace (setting `chat.useAgentsMdFile`, on by default).
 
 ## What this repository is
 
 A workbench for brief-driven Power BI Project (PBIP) development. The PBIP
-projects being developed live in `projects/`, one subfolder per project. Your
-job on a brief: modify the project's semantic model (TMDL) and report (PBIR)
-files so the brief is met, competently and with validation.
+projects live in `projects/`, one subfolder per project. Your job on a brief:
+change the project's semantic model (TMDL) and report (PBIR) files so the
+brief is met, and say what you could not verify.
 
-The installed plugins (`pbip`, `semantic-models`, `reports`) carry the domain
-skills; they load on demand. This file only covers how to operate in the repo.
+`projects/Brewline/` is a demo project with dummy data. Read its `README.md`
+before working on it.
+
+## A PBIP project
+
+```
+projects/<Name>/
+  <Name>.pbip                       the file Power BI Desktop opens
+  <Name>.SemanticModel/definition/  TMDL: model.tmdl, relationships.tmdl, tables/*.tmdl
+  <Name>.Report/definition/         PBIR: pages/pages.json, pages/<page>/page.json,
+                                    pages/<page>/visuals/<visual>/visual.json
+```
 
 ## Working a brief
 
-1. The target project is under `projects/<Name>/` as `<Name>.pbip` plus
-   `<Name>.SemanticModel/definition/` (TMDL) and `<Name>.Report/definition/`
-   (PBIR).
-2. Model edits: direct TMDL editing with the `tmdl` skill is the primary
-   path. Report edits: the `pbir-format` and report design skills.
-3. The `pbip` hooks validate every write (TMDL structure, PBIR schema,
-   report-to-model binding) and block with exit 2 on errors; fix the file,
-   never work around the hook.
-4. Before declaring a brief done, run the `pbip-validator` agent over the
-   project for the deeper check (syntax, indentation, referential integrity).
-5. Hooks are structural, not semantic: they cannot execute DAX or render
-   visuals. Say so when a change can only be confirmed in Power BI Desktop.
+1. Read the project's README, then the TMDL and PBIR files the brief touches.
+   Match what is already there: the measure home table, display folders,
+   naming, and the `$schema` versions in existing files.
+2. TMDL: indentation is semantic, one tab per level, never spaces. Quote names
+   that contain spaces or special characters (`'Gross Margin %'`). `///` sets
+   a description and must sit directly above its object. Give new objects a
+   new GUID `lineageTag`; never change existing ones.
+3. PBIR: each page and visual is a folder whose name equals its `name` field.
+   Use only letters, digits, `_` and `-`, or Desktop silently drops it. Add new
+   pages to `pages/pages.json` `pageOrder`. Field references use the table as
+   `Entity` and the column or measure as `Property`, and must exist in the
+   model.
+4. Avoid editing `definition.pbir` and `report.json` while Desktop has the
+   project open: its reload preview doesn't support external changes to them.
+   Never change a `.platform` file's `logicalId`.
+5. Power BI Desktop may have the project open. It offers to reload saved file
+   changes ("Apply external changes"); new tables, Power Query edits and new
+   data also need a Refresh. Say which results can only be confirmed in
+   Desktop: DAX values and how visuals render.
 
-## Commands
+## Reference material
+
+Detailed guidance lives in `skills/`. Read the relevant file when a brief
+needs it:
+
+- TMDL: `skills/pbip/tmdl/instructions.md`, with a full example model in
+  `skills/pbip/tmdl/examples/`
+- PBIR: `skills/pbip/pbir-format/instructions.md` and its `references/`
+- DAX, Power Query and report design: `skills/semantic-models/` and
+  `skills/reports/`
+
+## Checks you can run
+
+The validators in `hooks/pbip/` run standalone (bash; Git Bash on Windows):
 
 ```bash
-# Regenerate the Claude plugins after editing skills/, hooks/, or marketplace.yaml
-python3 adapters/claude/build.py
-
-# Smoke-test the validation hooks and the Claude shim
-bash scripts/test-hook-scripts.sh
-
-# Validate the generated plugins (needs the claude CLI)
-bash scripts/validate-plugins.sh
-
-# Run a validator by hand on any file
 bash hooks/pbip/validate-tmdl.sh <file.tmdl>
+bash hooks/pbip/validate-pbir.sh <file.json>     # skips silently without jq
+python3 skills/pbip/pbip/scripts/validate_pbip.py projects/<Name>/<Name>.pbip
 ```
+
+They check structure only, and nothing runs them automatically yet.
+
+## Not set up yet
+
+- Agent plugins: `marketplace.yaml`, `plugins/` and `CLAUDE.md` were removed,
+  so `adapters/claude/build.py` fails, and no agent loads the skills or runs
+  the hooks automatically.
+- CI: there are no workflows.
+- `LICENSE` and `ATTRIBUTIONS.md` were removed; restore them before
+  distributing the repo.
 
 ## Repository rules
 
-- `plugins/`, `.claude-plugin/`, and `CLAUDE.md` are generated by
-  `adapters/claude/build.py`. Never edit them by hand; edit the neutral
-  sources (`marketplace.yaml`, `skills/`, `hooks/`, `AGENTS.md`) and rebuild.
-  CI fails on drift.
-- TMDL indentation is semantic; PBIP files use one tab per nesting level.
-- Do not commit `.pbi/localSettings.json` or `.pbi/cache.abf` from projects
-  (already gitignored); everything else in a PBIP project is source.
-- External toolchains (Tabular Editor CLI, TOM, model MCP servers) are
+- Do not commit `.pbi/localSettings.json` or `.pbi/cache.abf` (gitignored);
+  everything else in a PBIP project is source.
+- External toolchains (Tabular Editor, the pbir CLI, the Fabric CLI) are
   optional extras when installed, never a dependency.
-- The content originates from Kurt Buhler's power-bi-agentic-development
-  marketplace (GPL-3.0); keep `LICENSE` and `ATTRIBUTIONS.md` intact.
+- The skills and hooks originate from Kurt Buhler's power-bi-agentic-development
+  marketplace (GPL-3.0); keep that credit.
