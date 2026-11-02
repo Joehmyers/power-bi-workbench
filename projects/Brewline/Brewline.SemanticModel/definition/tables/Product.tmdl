@@ -1,0 +1,75 @@
+/// One row per menu item or retail product.
+table Product
+	lineageTag: 82312909-9cc3-4af0-aad7-488a6b191e1e
+
+	column 'Product Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		lineageTag: 3369bf23-403d-4438-b3be-b335dcf965ae
+		summarizeBy: none
+		sourceColumn: Product Key
+
+		annotation SummarizationSetBy = User
+
+	column Product
+		dataType: string
+		lineageTag: 92f467fd-698b-46b2-a061-91e9cfa54a41
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 104b08a9-0f9b-4ebc-bb99-d3e9403167db
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subcategory
+		dataType: string
+		lineageTag: b534903a-2d2d-498a-9350-57afa16b9c23
+		summarizeBy: none
+		sourceColumn: Subcategory
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Menu price before the January 2026 rise on drinks and food.
+	column 'List Price'
+		dataType: decimal
+		formatString: \£#,##0.00
+		lineageTag: bdf2aa94-ffef-47a4-b671-b2b775c6d83e
+		summarizeBy: none
+		sourceColumn: List Price
+
+		annotation SummarizationSetBy = User
+
+	partition Product = m
+		mode: import
+		queryGroup: Data
+		source =
+				let
+				    FileName = "product.csv",
+				    Source = Csv.Document(
+				        if Text.StartsWith(DataSource, "http", Comparer.OrdinalIgnoreCase) then Web.Contents(DataSource, [RelativePath = FileName]) else File.Contents(DataSource & FileName),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Promoted,
+				        {
+				            {"Product Key", Int64.Type}, {"Product", type text}, {"Category", type text},
+				            {"Subcategory", type text}, {"List Price", Currency.Type}
+				        },
+				        "en-GB"
+				    )
+				in
+				    Typed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

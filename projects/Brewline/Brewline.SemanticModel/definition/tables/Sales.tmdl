@@ -1,0 +1,92 @@
+/// Units, net sales and cost by day, store and product. Use the measures in _Measures rather than these columns.
+table Sales
+	lineageTag: ed092316-c6c3-42ad-843f-1a1c602637b9
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: d96d63c5-1624-4743-8140-2361c79074c8
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Store Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 00baa991-87a6-414f-8c3b-81f7865cf513
+		summarizeBy: none
+		sourceColumn: Store Key
+
+		annotation SummarizationSetBy = User
+
+	column 'Product Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1e6659c0-7df9-4bd7-b20a-f1acc3e6a7f9
+		summarizeBy: none
+		sourceColumn: Product Key
+
+		annotation SummarizationSetBy = User
+
+	column Quantity
+		dataType: int64
+		isHidden
+		formatString: #,##0
+		lineageTag: 53ea67f0-d602-4266-8748-755dfca340b2
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Net Sales'
+		dataType: decimal
+		isHidden
+		formatString: \£#,##0.00
+		lineageTag: 27e3b4c9-dce4-4217-ad7b-b684a73ebe03
+		summarizeBy: sum
+		sourceColumn: Net Sales
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cost
+		dataType: decimal
+		isHidden
+		formatString: \£#,##0.00
+		lineageTag: 02d8c5f6-f74e-4faf-8a4e-db4ff09d743e
+		summarizeBy: sum
+		sourceColumn: Cost
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sales = m
+		mode: import
+		queryGroup: Data
+		source =
+				let
+				    FileName = "sales.csv",
+				    Source = Csv.Document(
+				        if Text.StartsWith(DataSource, "http", Comparer.OrdinalIgnoreCase) then Web.Contents(DataSource, [RelativePath = FileName]) else File.Contents(DataSource & FileName),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Promoted,
+				        {
+				            {"Date", type date}, {"Store Key", Int64.Type}, {"Product Key", Int64.Type},
+				            {"Quantity", Int64.Type}, {"Net Sales", Currency.Type}, {"Cost", Currency.Type}
+				        },
+				        "en-GB"
+				    )
+				in
+				    Typed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

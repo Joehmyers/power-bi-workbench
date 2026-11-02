@@ -1,0 +1,69 @@
+/// Orders by day, store and channel. Has no product grain, so order measures do not respond to Product filters.
+table Traffic
+	lineageTag: c8909800-2126-4f18-86d7-69aee1f6a880
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: dd/mm/yyyy
+		lineageTag: 78f2b21d-96c8-47b3-bab6-29be4c594e0d
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Store Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: abdeafc7-4de3-4470-a1cb-1cb44f6ec851
+		summarizeBy: none
+		sourceColumn: Store Key
+
+		annotation SummarizationSetBy = User
+
+	column 'Channel Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0e89480a-2e76-4739-9aa2-d32b90170407
+		summarizeBy: none
+		sourceColumn: Channel Key
+
+		annotation SummarizationSetBy = User
+
+	column 'Order Count'
+		dataType: int64
+		isHidden
+		formatString: #,##0
+		lineageTag: da7d888c-4eda-4709-91a0-bf347fd2a789
+		summarizeBy: sum
+		sourceColumn: Order Count
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Traffic = m
+		mode: import
+		queryGroup: Data
+		source =
+				let
+				    FileName = "traffic.csv",
+				    Source = Csv.Document(
+				        if Text.StartsWith(DataSource, "http", Comparer.OrdinalIgnoreCase) then Web.Contents(DataSource, [RelativePath = FileName]) else File.Contents(DataSource & FileName),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Promoted,
+				        {{"Date", type date}, {"Store Key", Int64.Type}, {"Channel Key", Int64.Type}, {"Order Count", Int64.Type}},
+				        "en-GB"
+				    )
+				in
+				    Typed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,19 @@
+{
+  "name": "Brewline",
+  "dataColors": [
+    "#6F4E37",
+    "#A8A29E",
+    "#2E6F73",
+    "#C8963E",
+    "#B5523B",
+    "#4F7CAC",
+    "#8DAA91",
+    "#3B3B3B"
+  ],
+  "foreground": "#2B2622",
+  "background": "#FFFFFF",
+  "tableAccent": "#6F4E37",
+  "good": "#2E6F73",
+  "neutral": "#C8963E",
+  "bad": "#B5523B"
+}

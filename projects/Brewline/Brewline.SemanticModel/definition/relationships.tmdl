@@ -1,0 +1,24 @@
+relationship 4bbce395-9eae-45d2-a1a2-eced531a09c0
+	fromColumn: Sales.Date
+	toColumn: Date.Date
+
+relationship 618e82e8-42d1-4bb7-ae91-702ad14bcedc
+	fromColumn: Sales.'Store Key'
+	toColumn: Store.'Store Key'
+
+relationship bd0b9751-c7d6-429b-a453-32da05359a27
+	fromColumn: Sales.'Product Key'
+	toColumn: Product.'Product Key'
+
+relationship bd7bff95-2514-4b6d-ae8e-8603a97d9df2
+	fromColumn: Traffic.Date
+	toColumn: Date.Date
+
+relationship 83657a00-c3dd-4c8b-ab16-a54253a8464a
+	fromColumn: Traffic.'Store Key'
+	toColumn: Store.'Store Key'
+
+relationship b62bec8c-ee23-404e-9d36-fcf9f9d83ac3
+	fromColumn: Traffic.'Channel Key'
+	toColumn: Channel.'Channel Key'
+

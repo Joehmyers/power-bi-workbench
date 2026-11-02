@@ -1,0 +1,156 @@
+/// Calendar covering whole years of the sales period. Marked as the model's date table.
+table Date
+	lineageTag: f475ca71-eaf7-4fc4-8aa8-b9b6bb31462e
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd/mm/yyyy
+		lineageTag: b5e48b87-34f1-4980-bb1d-a8a16ec363ae
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 8dc35bf2-cfac-4027-9b42-779f81ed7658
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = User
+
+	column Quarter
+		dataType: string
+		lineageTag: d589abf6-368f-420b-9aeb-cf271cfb0efd
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter'
+		dataType: string
+		lineageTag: 2fb53241-b4c0-4923-b385-e19ff3850a03
+		summarizeBy: none
+		sourceColumn: Year Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 92e119d3-64b7-495d-a834-af2eace78e8f
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = User
+
+	column Month
+		dataType: string
+		lineageTag: 267b3771-9025-4466-9773-a312527b90c0
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// First day of the month; use it as a continuous monthly axis.
+	column 'Month Start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: bbf8e704-bedf-43bb-b6a8-b8673d426741
+		summarizeBy: none
+		sourceColumn: Month Start
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: 738f796b-c10d-4953-8ea2-7565cce8045a
+		summarizeBy: none
+		sourceColumn: Year Month
+		sortByColumn: 'Year Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 58530956-12b6-4d14-b22d-29db6d6c3594
+		summarizeBy: none
+		sourceColumn: Year Month Number
+
+		annotation SummarizationSetBy = User
+
+	column 'Weekday Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e1fa37e3-b85f-4184-9736-fc1586198ecc
+		summarizeBy: none
+		sourceColumn: Weekday Number
+
+		annotation SummarizationSetBy = User
+
+	column Weekday
+		dataType: string
+		lineageTag: 55e6ac93-f475-4f20-9b49-34fc58f080dc
+		summarizeBy: none
+		sourceColumn: Weekday
+		sortByColumn: 'Weekday Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Weekend'
+		dataType: boolean
+		lineageTag: 9d6a4691-822e-49db-8d09-8ce2bb31c1ad
+		summarizeBy: none
+		sourceColumn: Is Weekend
+
+		annotation SummarizationSetBy = Automatic
+
+	/// TRUE up to the last date in Sales. Time-intelligence measures use it so the prior-year comparison stops where the data stops.
+	column 'Has Sales' = 'Date'[Date] <= MAX ( Sales[Date] )
+		dataType: boolean
+		isHidden
+		lineageTag: 49db0e94-b8b1-4c49-8068-75a945cb89c3
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = m
+		mode: import
+		queryGroup: Data
+		source =
+				let
+				    FileName = "date.csv",
+				    Source = Csv.Document(
+				        if Text.StartsWith(DataSource, "http", Comparer.OrdinalIgnoreCase) then Web.Contents(DataSource, [RelativePath = FileName]) else File.Contents(DataSource & FileName),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Promoted,
+				        {
+				            {"Date", type date}, {"Year", Int64.Type}, {"Quarter", type text}, {"Year Quarter", type text},
+				            {"Month Number", Int64.Type}, {"Month", type text}, {"Month Start", type date},
+				            {"Year Month", type text}, {"Year Month Number", Int64.Type},
+				            {"Weekday Number", Int64.Type}, {"Weekday", type text}, {"Is Weekend", type logical}
+				        },
+				        "en-GB"
+				    )
+				in
+				    Typed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

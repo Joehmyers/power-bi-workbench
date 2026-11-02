@@ -1,0 +1,114 @@
+/// One row per Brewline shop.
+table Store
+	lineageTag: 031faf30-42ea-49bc-a1d9-71739afec377
+
+	column 'Store Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		lineageTag: 3b1f6eb5-9150-421e-a3f5-499db96c3f79
+		summarizeBy: none
+		sourceColumn: Store Key
+
+		annotation SummarizationSetBy = User
+
+	column Store
+		dataType: string
+		lineageTag: fde3fc55-8c42-479e-a6f5-ae9c19c08303
+		summarizeBy: none
+		sourceColumn: Store
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 9d201fd6-979d-455f-9f3d-ba9f5dfae36d
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: cace43fc-7fec-49f9-a80f-2bd1c8f8197b
+		summarizeBy: none
+		sourceColumn: Region
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		dataType: string
+		lineageTag: 464d4976-182d-4a5b-9cc9-66de8dbe6ef6
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Station, Office, Campus or High Street. Drives the weekday and weekend trading pattern.
+	column Format
+		dataType: string
+		lineageTag: 329e4753-47d7-4f23-add2-0a415995d752
+		summarizeBy: none
+		sourceColumn: Format
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Open Date'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 58a7e6dc-e4e8-41d9-a083-355b52d97a75
+		summarizeBy: none
+		sourceColumn: Open Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Latitude
+		dataType: double
+		lineageTag: c9146bd1-4710-48ab-880e-078e01488190
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: Latitude
+
+		annotation SummarizationSetBy = User
+
+	column Longitude
+		dataType: double
+		lineageTag: 05485b75-7c5e-492d-943b-8fe8cb5b5867
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: Longitude
+
+		annotation SummarizationSetBy = User
+
+	partition Store = m
+		mode: import
+		queryGroup: Data
+		source =
+				let
+				    FileName = "store.csv",
+				    Source = Csv.Document(
+				        if Text.StartsWith(DataSource, "http", Comparer.OrdinalIgnoreCase) then Web.Contents(DataSource, [RelativePath = FileName]) else File.Contents(DataSource & FileName),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(
+				        Promoted,
+				        {
+				            {"Store Key", Int64.Type}, {"Store", type text}, {"City", type text}, {"Region", type text},
+				            {"Country", type text}, {"Format", type text}, {"Open Date", type date},
+				            {"Latitude", type number}, {"Longitude", type number}
+				        },
+				        "en-GB"
+				    )
+				in
+				    Typed
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

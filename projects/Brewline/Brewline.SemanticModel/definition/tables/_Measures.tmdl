@@ -1,0 +1,98 @@
+/// Home table for every report measure.
+table _Measures
+	lineageTag: 48936f93-0578-4067-932e-330c71c4f88f
+
+	/// Net sales after the price changes in the data, excluding VAT.
+	measure Revenue = SUM ( Sales[Net Sales] )
+		formatString: \£#,##0
+		displayFolder: Sales
+		lineageTag: 0b55f118-1dc2-4505-886d-5ee9c1702440
+
+	measure 'Total Cost' = SUM ( Sales[Cost] )
+		formatString: \£#,##0
+		displayFolder: Sales
+		lineageTag: 75592367-228f-4c63-b27f-159887022bda
+
+	measure 'Gross Margin' = [Revenue] - [Total Cost]
+		formatString: \£#,##0
+		displayFolder: Margin
+		lineageTag: 3fc6dfda-a3e2-4f05-bbfe-6b80e4a34251
+
+	measure 'Gross Margin %' = DIVIDE ( [Gross Margin], [Revenue] )
+		formatString: 0.0%
+		displayFolder: Margin
+		lineageTag: 89483c64-fc53-422b-980f-c3396a889ee7
+
+	measure Units = SUM ( Sales[Quantity] )
+		formatString: #,##0
+		displayFolder: Sales
+		lineageTag: 60ae96c1-cf13-4e45-b921-e802d2da8a88
+
+	/// Orders across all channels. Not affected by Product filters (Traffic has no product grain).
+	measure Orders = SUM ( Traffic[Order Count] )
+		formatString: #,##0
+		displayFolder: Orders
+		lineageTag: d437157a-2a85-444d-8710-0a00c666cc54
+
+	/// Revenue per order. Only meaningful by date, store or channel, not by product.
+	measure 'Avg Order Value' = DIVIDE ( [Revenue], [Orders] )
+		formatString: \£#,##0.00
+		displayFolder: Orders
+		lineageTag: 3bc8f9e5-2ba1-4c26-bc0f-566e08e37dcb
+
+	measure 'Mobile Order Share %' =
+			DIVIDE (
+			    CALCULATE ( [Orders], Channel[Channel] = "Mobile order" ),
+			    [Orders]
+			)
+		formatString: 0.0%
+		displayFolder: Orders
+		lineageTag: f442e076-2593-4369-b2c2-a02639bc1ccb
+
+	/// Revenue for the same dates one year earlier, limited to dates that have sales so a part-year compares like for like.
+	measure 'Revenue PY' =
+			CALCULATE (
+			    [Revenue],
+			    CALCULATETABLE (
+			        DATEADD ( 'Date'[Date], -1, YEAR ),
+			        'Date'[Has Sales] = TRUE
+			    )
+			)
+		formatString: \£#,##0
+		displayFolder: Time Intelligence
+		lineageTag: 1de72809-ad0b-4714-ae30-db24eadefa7b
+
+	measure 'Revenue YoY %' =
+			VAR _PY = [Revenue PY]
+			RETURN
+			    IF ( NOT ISBLANK ( _PY ), DIVIDE ( [Revenue] - _PY, _PY ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Time Intelligence
+		lineageTag: 5cb13e40-f6f4-4008-b696-91eaecb331f0
+
+	measure 'Revenue YTD' = TOTALYTD ( [Revenue], 'Date'[Date] )
+		formatString: \£#,##0
+		displayFolder: Time Intelligence
+		lineageTag: b672d1b2-4cf8-427d-9eee-030ccd85fc95
+
+	/// Last date with sales in the model, ignoring filters. Shows how fresh the data is.
+	measure 'Last Sales Date' = CALCULATE ( MAX ( Sales[Date] ), REMOVEFILTERS ( ) )
+		formatString: d mmm yyyy
+		displayFolder: Info
+		lineageTag: afd32377-e7b3-4ad4-9f3d-79d60fe3228d
+
+	column Value
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 46055cd8-014e-4afb-8159-fba3176c31bd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = User
+
+	partition _Measures = calculated
+		mode: import
+		source = {1}
+

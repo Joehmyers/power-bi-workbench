@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Brewline"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "57a5db58-9c27-45fb-927e-04cdcea59fb9"
+  }
+}

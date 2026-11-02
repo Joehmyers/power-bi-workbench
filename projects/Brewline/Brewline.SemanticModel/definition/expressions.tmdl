@@ -1,0 +1,9 @@
+/// Folder or URL the CSV files are read from, ending in a separator. A URL (http...) is read with Web.Contents; anything else is a local folder read with File.Contents, e.g. C:\src\power-bi-workbench\projects\Brewline\data\
+expression DataSource = "https://raw.githubusercontent.com/Joehmyers/power-bi-workbench/main/projects/Brewline/data/" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c3b7982b-7410-4d6a-8096-d3eeeaa40f79
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
