@@ -95,5 +95,3 @@ the repo's local validation gates.
   everything else in a PBIP project is source.
 - External toolchains (Tabular Editor, the pbir CLI, the Fabric CLI) are
   optional extras when installed, never a dependency.
-- The skills and hooks originate from Kurt Buhler's power-bi-agentic-development
-  marketplace (GPL-3.0); keep that credit.
