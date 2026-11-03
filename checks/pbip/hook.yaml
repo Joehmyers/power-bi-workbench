@@ -1,5 +1,5 @@
 # Platform-neutral hook definition. Events describe when to run each script;
-# adapters translate them into platform wiring (see adapters/README.md).
+# vendor-specific hook wiring is a future next step.
 #
 # Event kinds:
 #   file-change   after the agent writes or edits a file matching `paths`
@@ -7,7 +7,7 @@
 #   command-post  after the agent runs a shell command matching `command_matches`
 #
 # `extensions` lists the file extensions a file-change script cares about, so
-# adapters that only see a raw shell command can extract candidate paths.
+# a vendor-specific hook wrapper can extract candidate paths from the raw shell command.
 # Every script is a plain executable: `bash <script> FILE...` works standalone.
 name: pbip
 description: Validates PBIP project files (PBIR structure, TMDL syntax, report binding) after Write/Edit and Bash modifications

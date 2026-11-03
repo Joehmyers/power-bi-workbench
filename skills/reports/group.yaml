@@ -1,5 +1,5 @@
 # Skill group definition (one group = one installable plugin/space/assistant
-# bundle on the target platform). See adapters/README.md.
+# bundle on the target platform). Vendor packaging is a future next step.
 name: reports
 description: Build, format, optimize, and review interactive Power BI reports.
 keywords:

@@ -4,9 +4,9 @@
 #
 # Usage: validate-report-binding.sh FILE [FILE...]
 #
-# Platform-neutral hook script: takes file paths as arguments and works
-# standalone (shell, CI, pre-commit) or behind any agent's hook mechanism.
-# Adapters translate agent events into this call; see adapters/README.md.
+# Platform-neutral check script: takes file paths as arguments and works
+# standalone (shell, CI, pre-commit) or behind a future agent hook mechanism.
+# Vendor-specific hook wiring is a future next step.
 # Arguments not named definition.pbir are ignored. Validates that
 # definition.pbir has a valid semantic model connection:
 #   - datasetReference must have byPath or byConnection (non-null)

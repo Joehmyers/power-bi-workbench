@@ -6,15 +6,20 @@ workspace (setting `chat.useAgentsMdFile`, on by default).
 
 ## What this repository is
 
-A workbench for brief-driven Power BI Project (PBIP) development. The PBIP
-projects live in `projects/`, one subfolder per project. Your job on a brief:
-change the project's semantic model (TMDL) and report (PBIR) files so the
-brief is met, and say what you could not verify.
+This repo is a PBIP workbench for editing Power BI Project files directly in
+`projects/`. The core workflow is: open or create a project, read the relevant
+TMDL/PBIR files, make the required semantic-model or report edits, and report
+what could not be verified in Desktop.
 
-`projects/Brewline/` is a demo project with dummy data. Read its `README.md`
+`projects/Brewline/` is the demo project with dummy data. Read its `README.md`
 before working on it.
 
-## A PBIP project
+Checks are already in place under `checks/pbip/` and are the current repo
+validation layer. Hooks, plugins, and marketplace metadata are optional future
+layers for automation and packaging; they are not the baseline editing workflow
+of this repo.
+
+## PBIP project conventions
 
 ```
 projects/<Name>/
@@ -59,24 +64,30 @@ needs it:
 
 ## Checks you can run
 
-The validators in `hooks/pbip/` run standalone (bash; Git Bash on Windows):
+The validators in `checks/pbip/` are the repo's current validation checks and run
+standalone (bash; Git Bash on Windows):
 
 ```bash
-bash hooks/pbip/validate-tmdl.sh <file.tmdl>
-bash hooks/pbip/validate-pbir.sh <file.json>     # skips silently without jq
+bash checks/pbip/validate-tmdl.sh <file.tmdl>
+bash checks/pbip/validate-pbir.sh <file.json>     # skips silently without jq
 python3 skills/pbip/pbip/scripts/validate_pbip.py projects/<Name>/<Name>.pbip
 ```
 
-They check structure only, and nothing runs them automatically yet.
+They check structure only, and nothing runs them automatically yet. This repo
+already includes these checks; hook automation is the next step, not the current
+baseline. After a batch of edits, tell the agent to run the relevant check
+script to flag any errors it introduced and to confirm the project still passes
+the repo's local validation gates.
 
-## Not set up yet
+## Future next step
 
-- Agent plugins: `marketplace.yaml`, `plugins/` and `CLAUDE.md` were removed,
-  so `adapters/claude/build.py` fails, and no agent loads the skills or runs
-  the hooks automatically.
+- Agent plugins, generated vendor artifacts, and marketplace packaging are not
+  required for direct PBIP editing.
+- They are follow-on tasks when you want to wire the repo into a vendor-specific
+  workflow or a packaged install flow.
 - CI: there are no workflows.
-- `LICENSE` and `ATTRIBUTIONS.md` were removed; restore them before
-  distributing the repo.
+- If this repo is later packaged for distribution, restore project metadata and
+  license files as part of that release step.
 
 ## Repository rules
 

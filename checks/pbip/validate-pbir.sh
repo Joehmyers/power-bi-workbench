@@ -4,9 +4,9 @@
 #
 # Usage: validate-pbir.sh FILE [FILE...]
 #
-# Platform-neutral hook script: takes file paths as arguments and works
-# standalone (shell, CI, pre-commit) or behind any agent's hook mechanism.
-# Adapters translate agent events into this call; see adapters/README.md.
+# Platform-neutral check script: takes file paths as arguments and works
+# standalone (shell, CI, pre-commit) or behind a future agent hook mechanism.
+# Vendor-specific hook wiring is a future next step.
 # For each .json or .pbir argument inside a .Report/ directory, validates:
 #   1. JSON syntax (jq empty)
 #   2. Folder name spaces (pages/visuals won't render)

@@ -1,60 +1,50 @@
 # power-bi-workbench
 
-A workbench for agent-driven Power BI Project (PBIP) development: an agent
-modifies the PBIP projects in [`projects/`](projects/README.md) according to a
-brief, with the skills in context so it makes those changes competently.
+A workbench for brief-driven Power BI Project (PBIP) development. The default
+workflow is direct editing in [`projects/`](projects/README.md): update the
+semantic model and report files to satisfy the brief, then validate in Power BI
+Desktop and the repo tools where useful.
 
-Derived from Kurt Buhler's
+This repo is derived from Kurt Buhler's
 [power-bi-agentic-development](https://github.com/data-goblin/power-bi-agentic-development)
-marketplace, trimmed to the skills, hooks, and agents that service PBIP
-editing. Everything removed is recoverable from git history.
+marketplace, with the relevant PBIP, semantic-model, and report skills kept in
+context for repo work.
 
-## Quickstart
+## Workflow
 
-1. Install the plugins, scoped to this repository:
-
-   ```bash
-   claude plugin marketplace add joehmyers/power-bi-workbench
-   claude plugin install pbip semantic-models reports
-   ```
-
-2. Put a PBIP project in `projects/` (one subfolder per project; see
+1. Put a PBIP project in `projects/` (one subfolder per project; see
    [`projects/README.md`](projects/README.md)).
-
-3. Give the agent the brief. The skills load on demand; the `pbip` hooks
-   validate PBIR structure, TMDL syntax, and the report-to-model binding on
-   every write.
-
-## What is here
-
-| Plugin | Serves |
-|---|---|
-| `pbip` | PBIP project structure, direct TMDL authoring, PBIR format, plus the validation hooks and the `pbip-validator` agent |
-| `semantic-models` | Model design and audit, DAX authoring and optimisation, Power Query, naming conventions, refresh, lineage |
-| `reports` | Report creation, design and layout, theme JSON, report review agents |
-
-Hook checks are toggleable in `plugins/pbip/hooks/config.yaml`; set any key to
-`false` to disable it.
+2. Read the project README and the specific TMDL/PBIR files the brief touches.
+3. Make the semantic-model and report changes directly in the project files.
+4. Validate with Desktop refreshes and run the repo check scripts when useful.
+5. Tell the agent to run the relevant check script after each batch of edits to
+   flag structural errors it may have introduced.
+6. Current state: the repo already has validation checks in place; vendor hook
+   wiring and packaging are the next step, not the current repo workflow.
 
 ## Repository layout
 
-The content is agent-agnostic. The source of truth is platform-neutral, and
-adapters translate it into each platform's native format:
+- `projects/` -- the PBIP projects being developed here; this is the main working area
+- `skills/` -- repo guidance for PBIP authoring, DAX, Power Query, and report design
+- `checks/` -- standalone validation check scripts; useful but optional
+- `AGENTS.md` -- repo-specific operating instructions for agents
+- `docs/` -- overview and presentation material, including the deck and repo architecture diagram
 
-- `marketplace.yaml` -- name, version, shared metadata, and the group list
-- `skills/<group>/<skill>/` -- each skill as `skill.yaml` plus `instructions.md` and its resources
-- `hooks/` -- validation hooks: a `hook.yaml` event map plus plain shell scripts that run standalone (`bash hooks/pbip/validate-tmdl.sh <file>`)
-- `adapters/` -- one directory per target platform: [Claude Code](adapters/claude/README.md), [Databricks Genie](adapters/genie/README.md), and [OpenAI assistants](adapters/openai/README.md)
-- `projects/` -- the PBIP projects being developed here; the skills and hooks operate on these files
-- `plugins/` and `.claude-plugin/` -- the Claude adapter's generated output, committed so installs work straight from this repository. Edit the neutral sources, run `python3 adapters/claude/build.py`, and commit both; CI fails on drift.
+## Future next step
 
-The spec and the decision record behind this layout live in the maintainer's
-template-repo docs, at `docs/specs/agent-agnostic-marketplace/spec.md` and
-`docs/decisions/D-0002-platform-neutral-skill-format-for-agent-marketplaces.md`.
+The repo is currently a PBIP workbench with validation checks already in place.
+Vendor integration via generated hook wiring and platform-specific packaging is a
+next-step extension, not part of the current baseline workflow.
+
+- `checks/` can validate TMDL and PBIR structure when you want extra checks.
+- vendor-specific hook wiring and packaging is a future task for integration work.
+- `marketplace.yaml`, `plugins/`, and generated vendor artifacts are follow-on setup
+  tasks for packaging or installation, not the core repo workflow.
 
 ## Credits and licence
 
 The skills and hooks originate from
 [power-bi-agentic-development](https://github.com/data-goblin/power-bi-agentic-development)
 by [Kurt Buhler](https://data-goblins.com) (Data Goblins), licensed GPL-3.0.
-See [LICENSE](LICENSE) and [ATTRIBUTIONS.md](ATTRIBUTIONS.md).
+If this repo is packaged for release, add the appropriate license metadata and
+attribution files as part of that release step.

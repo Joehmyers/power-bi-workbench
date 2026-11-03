@@ -18,25 +18,29 @@ Preview features > Power BI Project files), or copy an existing project in.
 PBIP is a text format built for git, so projects here are versioned like any
 other source.
 
-## How the tooling applies
+## Default workflow
 
-The marketplace's skills and hooks are path-agnostic, so everything in this
-repository works on files here once the relevant plugins are installed
-(project-scoped installs are recommended; see the root README):
+The default repo workflow is direct editing in the PBIP project itself:
 
-- The `pbip` plugin's hooks validate PBIR structure, TMDL syntax, and the
-  report-to-model binding on every write or edit under a `.Report/` or
-  `.SemanticModel/` folder.
-- The `pbip`, `semantic-models`, and `reports` plugins carry the authoring
-  skills (TMDL, DAX, PBIR, report design).
-- The `pbi-desktop` plugin drives a live Power BI Desktop session when the
-  project is open there.
+- update the semantic model in `.SemanticModel/definition/`
+- update the report in `.Report/definition/`
+- keep the project in sync with the brief and with the model/report structures
+- validate with Desktop and the repo's check scripts when helpful
+- after each edit batch, tell the agent to run the relevant check script so it can
+  flag errors it introduced
 
-You can also run the validators by hand, with no agent involved:
+## Validation checks
+
+- `checks/pbip/` provides standalone validation checks for TMDL and PBIR.
+- `skills/` provides the authoring guidance and conventions the repo expects.
+- vendor integration with hook wiring is the next step if you want this repo to run
+  as a packaged, vendor-specific workflow.
+
+You can run the validators by hand, with no agent involved:
 
 ```bash
-bash hooks/pbip/validate-tmdl.sh projects/Sales/Sales.SemanticModel/definition/tables/Orders.tmdl
-bash hooks/pbip/validate-pbir.sh projects/Sales/Sales.Report/definition/pages/p1/page.json
+bash checks/pbip/validate-tmdl.sh projects/Sales/Sales.SemanticModel/definition/tables/Orders.tmdl
+bash checks/pbip/validate-pbir.sh projects/Sales/Sales.Report/definition/pages/p1/page.json
 ```
 
 ## What stays out of git

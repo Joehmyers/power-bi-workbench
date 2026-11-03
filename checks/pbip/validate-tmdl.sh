@@ -4,9 +4,9 @@
 #
 # Usage: validate-tmdl.sh FILE [FILE...]
 #
-# Platform-neutral hook script: takes file paths as arguments and works
-# standalone (shell, CI, pre-commit) or behind any agent's hook mechanism.
-# Adapters translate agent events into this call; see adapters/README.md.
+# Platform-neutral check script: takes file paths as arguments and works
+# standalone (shell, CI, pre-commit) or behind a future agent hook mechanism.
+# Vendor-specific hook wiring is a future next step.
 # Runs the tmdl-validate binary on any .tmdl file inside a .SemanticModel/
 # or .Dataset/ directory; other arguments are ignored.
 #

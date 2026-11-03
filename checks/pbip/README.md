@@ -1,13 +1,12 @@
-# PBIP Validation Hooks
+# PBIP Validation Checks
 
 Validation scripts for PBIR and TMDL files, run after an agent writes or edits them.
 
 The scripts are platform-neutral: each takes file paths as arguments
-(`bash validate-tmdl.sh FILE...`) and works standalone, in CI, or behind any
-agent's hook mechanism. `hook.yaml` describes when each script should fire;
-adapters (see `adapters/README.md`) translate that into platform wiring. The
-Claude adapter generates `hooks.json` and bridges Claude Code's stdin JSON
-protocol through `claude-hook-adapter.sh`.
+(`bash validate-tmdl.sh FILE...`) and works standalone, in CI, or behind a
+future vendor hook mechanism. The current repo state is check-based and
+manual/agent-invoked; vendor integration is a next step rather than part of the
+baseline workflow.
 
 ## Hook files
 
@@ -111,17 +110,17 @@ This whole binary is a stopgap. It gets replaced by the Tabular Editor 3 CLI (`t
 
 4. Update the table above.
 
-5. Test: `bash hooks/pbip/validate-pbir.sh <path>`
+5. Test: `bash checks/pbip/validate-pbir.sh <path>`
 
-## "if" filter syntax in the generated hooks.json
+## "if" filter syntax for future vendor hook wiring
 
-The Claude adapter turns each `hook.yaml` event into `"if"` filters in the
-generated `plugins/pbip/hooks/hooks.json`. Edit/Write `"if"` uses
-**gitignore path patterns** (recursive `**`, single-level `*`):
+A future vendor hook wrapper would turn each `hook.yaml` event into `"if"` filters in a
+generated vendor-specific registry. Edit/Write `"if"` uses **gitignore path patterns**
+(recursive `**`, single-level `*`):
 - `Edit(**.Report/**)` -- any file inside any .Report/ at any depth
 - `Write(**/definition.pbir)` -- definition.pbir at any depth
 
-Pipes not supported in `"if"`; the adapter emits separate Edit and Write matchers instead of `Write|Edit`.
+Pipes not supported in `"if"`; the wrapper emits separate Edit and Write matchers instead of `Write|Edit`.
 
 ## Constraints
 
